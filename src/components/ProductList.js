@@ -1,20 +1,36 @@
 import React from "react";
+import {getAll} from "../api/products";
 
-const ProductListItem = (props) => {
-  return <div>
-    <div>Name: {props.product.name}</div>
-    <div>Price: {props.product.price}</div>
-  </div>;
-}
+class ProductList extends React.Component {
+  state = {
+    loading : true,
+    products : []
+  }
 
-const ProductList = (props) => {
-  const products = props.products.map((product) => {
-    return <ProductListItem product={product}/>
-  });
+  componentDidMount() {
+    getAll().then(products => {
+      this.setState({
+        loading : false,
+        products
+      });
+    });
+  }
 
-  return <div>
-    {products}
-  </div>;
+  render() {
+    return this.state.loading
+      ? <div>Loading..</div>
+      : <div>
+        {this.state.products.map(product => {
+          return (
+            <div key={product.id}>
+              <div>Name: {product.name}</div>
+              <div>Price: {product.price}</div>
+              <button type="button" onClick={() => this.props.addToCart(product)}>Add to Cart</button>
+            </div>
+          );
+        })}
+      </div>;
+  }
 }
 
 export default ProductList;
